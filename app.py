@@ -1,45 +1,55 @@
+
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 from PIL import Image
+import os
 
-# StreamlitのSecretsからAPIキーを読み込んで設定
-try:
-    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-except Exception as e:
-    st.error("APIキーの設定がうまくできていないみたい。Secretsを確認してみてね。")
+# 画面のタイトル設定
+st.title("勝馬AIくみこの爆裂自動予想ルーム 🐎🔥")
+st.write("馬柱やオッズのスクショをアップロードするだけで、くみこが激アツ予想を弾き出すよ！")
 
-st.title("🐴 競馬AI予想マスター くみこ")
-st.caption("ヒロくん専用の自動予想ツールへようこそ！")
+# Gemini APIキーの設定（StreamlitのSecretsから読み込み）
+api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
 
-# 画像アップロード
-uploaded_file = st.file_uploader("馬柱やオッズのスクショ画像をアップロードしてね📸", type=["png", "jpg", "jpeg"])
+if not api_key:
+    st.error("⚠️ GEMINI_API_KEY が設定されていません。Streamlitの設定画面で登録してね！")
+else:
+    # 新しい Google GenAI クライアントの初期化
+    client = genai.Client(api_key=api_key)
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="読み込んだスクショ", use_container_width=True)
-    st.success("スクショの読み込みに成功したよ！")
-    
-    with st.spinner("くみこがスクショをじっくり解析中... 待っててね！"):
+    # 画像アップローダーの設置
+    uploaded_file = st.file_uploader("ここに馬柱やオッズのスクショをポンと入れてね！", type=["png", "jpg", "jpeg"])
+
+    if uploaded_file is not None:
+        # 画像を開く
+        image = Image.open(uploaded_file)
+        st.image(image, caption="アップロードされたスクショ", use_container_width=True)
+        
+        st.write("🔍 くみこがデータを分析中... 本命馬を弾き出すよ！")
+        
+        # 競馬予想用のプロンプト（指示書）
+        prompt = """
+        あなたはプロの競馬AI予想家「くみこ」です。
+        提供された馬柱やオッズの画像（スクショ）を、本物のAIの目で徹底的に分析してください。
+        
+        以下の構成で、ユーザーにフレンドリーかつ情熱的なトーンで予想を出力してください：
+        1. 【くみこの総評】（レース全体の展開予想やバ場の状態などへの言及）
+        2. 【◎ 本命馬】（馬番、馬名、そしてその馬を選んだ明確な理由・強み）
+        3. 【○ 逆転候補 / ▲ 穴馬】（それぞれ注目する理由）
+        4. 【おすすめの買い目】（単勝、馬連、ワイドなど、現実的で熱い買い目）
+        
+        最後は「ヒロくん、一緒に大穴当てにいくよー！」という熱いメッセージで締めくくってください。
+        """
+        
         try:
-            # AI（Gemini）への指示出し文
-            prompt = """
-            あなたは優秀な競馬AI予想マスターの「くみこ」です。
-            アップロードされた競馬の馬柱やオッズのスクショ画像から、出走馬の名前、騎手、オッズ、人気順などの情報を正確に読み取ってください。
-            そのデータをもとに、以下の2つの視点から詳細な予想を出してください。
+            # 最新の gemini-2.5-flash モデルを使って画像分析
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=[prompt, image]
+            )
             
-            1. ガチガチ本命馬（軸候補）：上位人気で最も安定している、軸に最適な馬とその理由
-            2. コスパ最強！激アツ穴馬：オッズと人気のバランスから見て、過小評価されている美味しい穴馬とその理由
-            
-            最後に、それらを組み合わせた「くみこのおすすめ買い目（馬連、馬単、ワイドなど）」を分かりやすく提案してください。
-            ヒロくんに向けた、親しみやすくて元気な口調で出力してください。
-            """
-            
-            # Geminiモデルを使って画像を解析
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            response = model.generate_content([prompt, image])
-            
-            st.header("✨ くみこ画伯のAI自動予想結果 ✨")
-            st.write(response.text)
+            st.success("✨ くみこの激アツ予想が完了したよ！")
+            st.markdown(response.text)
             
         except Exception as e:
-            st.error(f"解析中にちょっとエラーが出ちゃったみたい：{e}")
+            st.error(f"エラーが発生しちゃった💦: {e}")

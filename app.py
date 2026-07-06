@@ -3,7 +3,6 @@ import google.genai as genai
 from PIL import Image
 import os
 
-i
 
 # 画面のタイトル設定
 st.title("勝馬AIくみこの爆裂自動予想ルーム 🐎🔥")

@@ -1,7 +1,15 @@
+
 import streamlit as st
-import google.genai as genai
-from PIL import Image
 import os
+import sys
+import subprocess
+
+# Google AIがいない場合は、強制的にその場でインストールする魔法の呪文
+try:
+    import google.genai as genai
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "google-genai"])
+    import google.genai as genai
 
 
 # 画面のタイトル設定

@@ -1,11 +1,10 @@
 import streamlit as st
 
-st.title("🏇 競馬AI予想マスター くみこ")
-st.write("ヒロくん専用の自動予想ツールへようこそ！")
+st.title("🐴 競馬AI予想マスター・くみこ")
+st.write("ヒロくん、こんにちは！今日はどのレースを予想する？")
 
-# 馬柱やオッズのスクショをアップロードする場所
-uploaded_file = st.file_uploader("馬柱やオッズのスクショ画像をアップロードしてね📸", type=["png", "jpg", "jpeg"])
+# ここに今後、スクショを読み取る機能などを追加していくよ！
+uploaded_file = st.file_uploader("馬柱やオッズのスクショをアップロードしてね！", type=["jpg", "png"])
 
 if uploaded_file is not None:
-    st.image(uploaded_file, caption="読み込んだスクショ", use_container_width=True)
-    st.success("スクショの読み込みに成功したよ！ここに自動解析と予想の機能を組み込んでいこうねロジック✨")
+    st.write("スクショを受け取ったよ！分析中…（まだ準備中だよ！）")

@@ -21,9 +21,9 @@ if uploaded_file is not None:
     
     with st.spinner("くみこがパドックとデータを分析中...少々お待ちを！🐴✨"):
         try:
-            # 競馬予想に特化したAIモデルの呼び出し
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            prompt = "この競馬の画像（馬柱やオッズなど）を分析して、本命馬、対抗馬、激アツの穴馬を理由付きで予想してください。最後に見出しで『くみこの爆裂大本命オシウマ！』をバシッと決めてください！"
+            # モデル名の指定を完全に修正
+            model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
+            prompt = "この競馬の画像（馬柱やオッズなど）を分析して、本命馬、対抗馬、激アツの穴馬を理由付きで予想してください。最後に見出しで『くみ子の爆裂大本命オシウマ！』をバシッと決めてください！"
             
             response = model.generate_content([prompt, image])
             

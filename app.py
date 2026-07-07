@@ -1,5 +1,17 @@
-import streamlit as st
+import os
+import sys
+import subprocess
+
+# 🛠️ Streamlitのバグを完全粉砕！自分のお部屋の中に直接AIを仕入れる魔法
+import_folder = os.path.join(os.getcwd(), "my_packages")
+if not os.path.exists(import_folder):
+    subprocess.run([sys.executable, "-m", "pip", "install", "-t", import_folder, "google-generativeai", "Pillow"])
+
+if import_folder not in sys.path:
+    sys.path.insert(0, import_folder)
+
 import google.generativeai as genai
+import streamlit as st
 from PIL import Image
 
 # 画面のタイトル
@@ -21,14 +33,10 @@ if uploaded_file is not None:
     
     with st.spinner("くみこがパドックとデータを分析中...少々お待ちを！🐴✨"):
         try:
-            # 競馬予想に特化したAIモデルの呼び出し
             model = genai.GenerativeModel("gemini-1.5-flash")
             prompt = "この競馬の画像（馬柱やオッズなど）を分析して、本命馬、対抗馬、激アツの穴馬を理由付きで予想してください。最後に見出しで『くみこの爆裂大本命オシウマ！』をバシッと決めてください！"
-            
             response = model.generate_content([prompt, image])
-            
             st.success("予想が完了したよーーーっ！！！")
             st.markdown(response.text)
-            
         except Exception as e:
             st.error(f"おっと、予想中にエラーが発生しちゃったみたい💦: {e}")

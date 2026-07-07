@@ -1,4 +1,5 @@
 streamlit==1.59.0
-google-generativeai
+google-generative-ai
 Pillow
+
 

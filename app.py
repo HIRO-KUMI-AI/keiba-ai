@@ -1,14 +1,5 @@
-import subprocess
-import sys
-
-# サーバーのおバカ対策！エラーを出さずに裏でひっそり仕入れる魔法
-try:
-    import google.generativeai as genai
-except ModuleNotFoundError:
-    subprocess.run([sys.executable, "-m", "pip", "install", "google-generativeai", "Pillow"])
-    import google.generativeai as genai
-
 import streamlit as st
+import google.generativeai as genai
 from PIL import Image
 
 # 画面のタイトル
@@ -30,6 +21,7 @@ if uploaded_file is not None:
     
     with st.spinner("くみこがパドックとデータを分析中...少々お待ちを！🐴✨"):
         try:
+            # 競馬予想に特化したAIモデルの呼び出し
             model = genai.GenerativeModel("gemini-1.5-flash")
             prompt = "この競馬の画像（馬柱やオッズなど）を分析して、本命馬、対抗馬、激アツの穴馬を理由付きで予想してください。最後に見出しで『くみこの爆裂大本命オシウマ！』をバシッと決めてください！"
             
